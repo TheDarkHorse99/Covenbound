@@ -1,0 +1,27 @@
+{
+  "name": "covenbound",
+  "version": "0.2.0",
+  "private": true,
+  "description": "A cozy 8-bit witch life sim and monster-collecting action RPG.",
+  "type": "module",
+  "main": "desktop/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:single": "vite build --mode single",
+    "typecheck": "tsc --noEmit",
+    "preview": "vite preview",
+    "desktop": "vite build && electron ."
+  },
+  "dependencies": {
+    "@fontsource/press-start-2p": "5.2.7",
+    "@fontsource/vt323": "5.2.7",
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "electron": "44.7.0",
+    "typescript": "5.9.3",
+    "vite": "7.3.7",
+    "vite-plugin-singlefile": "2.3.3"
+  }
+}

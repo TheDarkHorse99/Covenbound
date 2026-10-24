@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Covenbound</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+</head>
+<body>
+<div id="app">
+  <div id="stage">
+    <div id="game"></div>
+    <div id="hud" hidden>
+      <div class="hud-tl panel">
+        <div class="hrow"><span class="nm" id="wName">Witch</span><span class="lbl" id="wCraft"></span></div>
+        <div class="hrow"><span class="tag">HP</span><div class="bar hp"><i id="hpF"></i><span id="hpT"></span></div></div>
+        <div class="hrow"><span class="tag">MP</span><div class="bar mp"><i id="mpF"></i><span id="mpT"></span></div></div>
+        <div class="hrow"><span class="tag">EN</span><div class="bar en"><i id="enF"></i><span id="enT"></span></div></div>
+        <div class="hrow"><span class="tag">XP</span><div class="bar xp thin"><i id="xpF"></i></div></div>
+        <div class="buffs" id="buffs"></div>
+      </div>
+      <div class="hud-fam panel"><img id="fImg" class="pix" alt=""><div class="fcol"><span class="nm" id="fName"></span><span class="lbl" id="fLv"></span><div class="bar fx thin"><i id="fxF"></i></div></div></div>
+      <div class="hud-tr">
+        <div class="panel clock"><div class="hrow"><span class="lbl" id="day"></span><span class="lbl" id="weather"></span></div><div class="time" id="clock"></div><div class="gold"><span id="gold">0</span>g</div></div>
+        <div class="panel quest"><div class="lbl">Quest</div><div class="qt" id="qTitle"></div><div class="qp" id="qProg"></div></div>
+      </div>
+      <div id="bossbar" hidden><div class="nm" id="bossName"></div><div class="bar hp"><i id="bossF"></i></div></div>
+      <div id="banner"><div class="big" id="banBig"></div><div class="sm" id="banSm"></div></div>
+      <div id="toasts"></div>
+      <div id="broombar" hidden><span class="tag">BROOM</span><div class="bar br"><i id="bsF"></i></div></div>
+      <div class="hud-bottom">
+        <div class="selname" id="selName"></div>
+        <div class="bars-row"><div id="hotbar"></div><div id="skills"></div></div>
+      </div>
+    </div>
+    <div id="dialog" hidden><div class="who" id="dWho"></div><div class="txt" id="dTxt"></div><div class="more">E ▶</div></div>
+    <div id="modal" hidden><div class="win" id="win" role="dialog" aria-modal="true"></div></div>
+  </div>
+</div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>
