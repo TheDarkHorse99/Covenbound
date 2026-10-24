@@ -19,3 +19,9 @@ if (what === 'map') {
   const t = new Terrain({ w: map.w, h: map.h, m: map.m, v: map.v, id, roofs: findRoofs(map.m, map.w, map.h), home: { wall: 0, floor: 0 }, bakeOver: true });
   const c = document.createElement('canvas'); c.width = map.w * 16; c.height = map.h * 16; const g = c.getContext('2d')!; g.drawImage(t.ground.canvas, 0, 0); g.drawImage(t.over.canvas, 0, 0); show(c, Number(params.get('s') || 2));
 }
+import { cauldron, crate, rack, roost, board, well } from '../art/props';
+if (what === 'props') {
+  const s = Number(params.get('s') || 5);
+  show(cauldron(0, false), s, 'cauldron'); show(cauldron(1, true), s, 'brewing'); show(crate(), s, 'crate'); show(rack('#6b3fa0', '#e0c070'), s, 'rack');
+  out.appendChild(document.createElement('br')); show(roost(false), s, 'roost'); show(roost(true), s, 'roost+egg'); show(board(), s, 'board'); show(well(), s, 'well');
+}
