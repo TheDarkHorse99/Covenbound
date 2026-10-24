@@ -14,11 +14,11 @@ const BODY: Record<Dir, string[]> = {
     '..hhhhhhhhhhhh..',
     '..hhhhhssshhhh..',
     '..hhsssssssshh..',
-    '..hssewssewssh..',
-    '..hsseesseessh..',
-    '..hhpssmmsspih..',
-    '..hhh.ssss.hhh..',
-    '..hh..CssC..hh..',
+    '..hssessssessh..',
+    '..hssessssessh..',
+    '..hhpsssmsssih..',
+    '..hhhsssssshhh..',
+    '..hh.CssssC.hh..',
     '..hhaRRjjRRahh..',
     '...aaRRRRRRaa...',
     '..aaRRRRRRRRaa..',
@@ -56,11 +56,11 @@ const BODY: Record<Dir, string[]> = {
     '...hhhhhhhhhh...',
     '...hhhhhhhsss...',
     '...hhhhhhssss...',
-    '...hhhhhsssews..',
-    '...hhhhhssssss..',
-    '...hhhhsssss....',
-    '...hhhh.ss......',
-    '...hhh.CsC......',
+    '...hhhhhssses...',
+    '...hhhhhssses...',
+    '...hhhhsssssm...',
+    '...hhhhssss.....',
+    '...hhh.Css......',
     '....hRRRRRR.....',
     '....RRRRaaR.....',
     '....RRRRaaRR....',
@@ -104,7 +104,7 @@ export function charSprite(look: Look, dir: Dir, frame: number, scale = 1): HTML
   if (dir === 'up' && look.hat === 'hood') hat = hat.map((r, i) => i >= 9 ? r.replace(/\./g, (m, idx: number) => (idx >= 2 && idx <= 13 ? 'H' : '.')) : r);
   rows = overlay(rows, hat);
   const mats: Record<string, string> = { h: look.hair, s: look.skin, R: look.robe, r: look.trim || shiftDark(look.robe), a: look.robe, C: look.trim || '#e8dcc0', L: look.legs || '#3a2a3a', B: look.boots || '#4a2e1a', H: look.hatCol, T: look.band, F: '#f08ac0', j: '#f2c14e', p: '#f0a0a0', i: '#f0a0a0' };
-  let c = shaded('char:' + key, rows, mats, { flat: { e: '#1a1020', w: '#ffffff', m: '#9a4a4a', Y: '#f2c14e', f: '#ffe680' }, noShade: 'pi' });
+  let c = shaded('char:' + key, rows, mats, { flat: { e: '#2a1e38', w: '#ffffff', m: '#c0666a', Y: '#f2c14e', f: '#ffe680' }, noShade: 'pis' });
   if (scale === 2) c = scale2x(c);
   cache.set(key, c); return c;
 }
