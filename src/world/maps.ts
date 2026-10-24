@@ -1,8 +1,8 @@
 import { TL, walkSolid, isGrassy } from './tiles';
 import { rngFrom, clamp, T } from '../core/util';
-import type { Look } from '../art/sprites';
+import type { Look } from '../art/chars16';
 
-export type PropKind = 'cauldron' | 'roost' | 'rack' | 'crate' | 'board' | 'well' | 'bed' | 'roadblock' | 'stump';
+export type PropKind = 'cauldron' | 'roost' | 'rack' | 'crate' | 'board' | 'well' | 'door' | 'shrine' | 'waystone';
 export interface Prop { id: string; kind: PropKind; x: number; y: number; hw: number; hh: number; label: string }
 export interface NpcDef { id: string; name: string; look: Look; x: number; y: number; role: string; flag?: string }
 export interface Exit { side: 'w' | 'e'; to: string | null; from: 'w' | 'e' }
@@ -51,14 +51,14 @@ function buildHome(): MapData {
   for (const [x, y] of [[13, 16], [22, 21], [4, 12]]) set(x, y, TL.ROCK);
   rect(2, 15, 8, 15, TL.HEDGE); set(5, 15, TL.GRASS);
   const props: Prop[] = [
-    { id: 'bed', kind: 'bed', x: 7 * T + 8, y: 5 * T + 8, hw: 8, hh: 8, label: 'Sleep' },
+    { id: 'door', kind: 'door', x: 7 * T + 8, y: 5 * T + 8, hw: 6, hh: 7, label: 'Enter cottage' },
     { id: 'crate', kind: 'crate', x: 4 * T + 8, y: 7 * T + 4, hw: 7, hh: 5, label: 'Shipping crate' },
     { id: 'cauldron', kind: 'cauldron', x: 10 * T + 8, y: 7 * T + 4, hw: 8, hh: 5, label: 'Cauldron' },
     { id: 'rack', kind: 'rack', x: 2 * T + 12, y: 9 * T + 4, hw: 6, hh: 4, label: 'Broom rack' },
     { id: 'roost', kind: 'roost', x: 5 * T, y: 18 * T, hw: 18, hh: 10, label: 'Familiar roost' },
   ];
   const md: MapData = { id: 'home', name: 'Thistledown', sub: 'Your homestead', w, h, m, v, props, npcs: [], safe: true,
-    entries: { e: { x: (w - 2.5) * T, y: 13 * T + 8 }, bed: { x: 7 * T + 8, y: 6 * T + 10 } }, exits: [{ side: 'e', to: 'village', from: 'w' }],
+    entries: { e: { x: (w - 2.5) * T, y: 13 * T + 8 }, door: { x: 7 * T + 8, y: 6 * T + 12 } }, exits: [{ side: 'e', to: 'village', from: 'w' }],
     field: { x0: 13, y0: 5, x1: 26, y1: 10 }, open: [], blight: [], regions: {}, mid: 13 };
   md.open = openTiles(m, w, h); void r; return md;
 }
@@ -81,6 +81,8 @@ function buildVillage(): MapData {
     { id: 'wren', name: 'Grandmother Wren', role: 'Quests & Crafts', x: 20 * T + 8, y: npcY, look: L('pointed', '#3a2050', '#b06aff', '#e8e8f0', '#f1c6a0', '#4a2a5a') },
     { id: 'corwin', name: 'Corwin', role: 'Wands, staves & charms', x: 28 * T + 8, y: npcY, look: L('crooked', '#1e2a3a', '#4fb3d9', '#8a8aa0', '#8fb8e8', '#2f4f8f') },
     { id: 'tamsin', name: 'Tamsin', role: 'Broom-maker', x: 35 * T + 8, y: npcY, look: L('pointed', '#4a2a1a', '#e07a30', '#e8d8a0', '#7fae5a', '#7a5a2a') },
+    { id: 'bram', name: 'Bram', role: 'Carpenter: furniture & decor', x: 27 * T + 8, y: 17 * T + 12, flag: 'bram', look: L('wide', '#6a4a2a', '#c8a040', '#8a5a3a', '#d8a880', '#5a6a8a') },
+    { id: 'pip', name: 'Pip', role: "Ysolde's apprentice", x: 24 * T + 8, y: 19 * T + 4, flag: 'pipSafe', look: L('crooked', '#3a5a3a', '#9a5ad6', '#e8d8a0', '#f1c6a0', '#5a7a4a') },
     { id: 'ysolde', name: 'Ysolde', role: 'Hedge witch: rare goods', x: 22 * T + 8, y: 17 * T + 8, flag: 'ysolde', look: L('crooked', '#3a3a2a', '#9a5ad6', '#2a1a1a', '#d9c7f0', '#3a5a3a') },
   ];
   const props: Prop[] = [
@@ -120,6 +122,7 @@ function buildForest(): MapData {
   const regions: MapData['regions'] = {
     camp: { x: 25, y: mid + 15, r: 6 }, hollow: { x: 66, y: mid - 17, r: 7 }, hideout: { x: 47, y: mid + 19, r: 4.5 },
     pond1: { x: 13, y: mid - 15, r: 4.5 }, pond2: { x: 54, y: mid - 9, r: 3.5 }, glade: { x: 38, y: mid - 16, r: 5 }, thicket: { x: 74, y: mid + 14, r: 5 },
+    pondshrine: { x: 13, y: mid - 9, r: 2.2 }, stone1: { x: 19, y: mid - 9, r: 2.2 }, stone2: { x: 52, y: mid + 9, r: 2.2 }, stone3: { x: 77, y: mid - 6, r: 2.2 },
   };
   const trail = (x0: number, y0: number, x1: number, y1: number) => {
     let cx = x0, cy = y0; let guard = 0;
@@ -154,15 +157,33 @@ function buildForest(): MapData {
   const hollow = regions.hollow; blob(hollow.x, hollow.y, 6.5); blob(hollow.x - 7, hollow.y + 4, 3); blob(hollow.x + 5, hollow.y + 7, 3);
   const open = openTiles(m, w, h).filter(i => reach[i]);
   for (let k = 0; k < 10; k++) { const i = open[Math.floor(r() * open.length)]; const xx = i % w, yy = (i / w) | 0; if (xx < 12 || Math.abs(yy - roadY[xx]) < 3) continue; blob(xx, yy, 1.5 + r() * 1.5); }
-  const md: MapData = { id: 'forest', name: 'Brindlewood', sub: 'Corrupted forest · Lv 1–8', w, h, m, v, props: [], npcs: [], safe: false,
+  const gl = regions.glade, ps = regions.pondshrine; m[gl.y * w + gl.x] = TL.SHRINE; m[ps.y * w + ps.x] = TL.SHRINE;
+  const props: Prop[] = [
+    { id: 'glade', kind: 'shrine', x: gl.x * T + 8, y: gl.y * T + 10, hw: 7, hh: 5, label: 'Glade shrine' },
+    { id: 'pond', kind: 'shrine', x: ps.x * T + 8, y: ps.y * T + 10, hw: 7, hh: 5, label: 'Pond shrine' },
+    ...[1, 2, 3].map(n => { const g = regions['stone' + n]; return { id: 'stone' + n, kind: 'waystone' as const, x: g.x * T + 8, y: g.y * T + 10, hw: 5, hh: 4, label: 'Old waystone' }; }),
+  ];
+  for (const p of props) { const i = Math.floor(p.y / T) * w + Math.floor(p.x / T); if (m[i] === TL.BLIGHT || m[i] === TL.DEADTREE) m[i] = TL.GRASS; }
+  const md: MapData = { id: 'forest', name: 'Brindlewood', sub: 'Corrupted forest · Lv 1–8', w, h, m, v, props, npcs: [], safe: false,
     entries: { w: { x: 2.5 * T, y: mid * T + 8 }, e: { x: (w - 2.5) * T, y: mid * T + 8 } }, exits: [{ side: 'w', to: 'village', from: 'e' }, { side: 'e', to: null, from: 'w' }],
     open: openTiles(m, w, h).filter(i => reach[i]), blight, regions, mid };
   return md;
 }
 
+function buildCottage(): MapData {
+  const w = 16, h = 11; const m = new Uint8Array(w * h).fill(TL.VOID), v = new Uint8Array(w * h);
+  for (let y = 0; y <= 1; y++) for (let x = 1; x <= 14; x++) m[y * w + x] = TL.WALL_IN;
+  for (let y = 2; y <= 9; y++) for (let x = 1; x <= 14; x++) m[y * w + x] = TL.FLOOR_IN;
+  m[9 * w + 7] = TL.DOOR_IN;
+  return { id: 'cottage', name: 'Your cottage', sub: 'Press V to decorate', w, h, m, v, props: [], npcs: [], safe: true,
+    entries: { door: { x: 7 * T + 8, y: 8 * T + 10 } }, exits: [], open: [], blight: [], regions: {}, mid: 5 };
+}
+/** Floor area of the cottage that furniture may occupy. */
+export const COTTAGE = { x0: 1, x1: 14, wallY: 1, y0: 2, y1: 9, doorX: 7, doorY: 9 };
+
 const CACHE: Record<string, MapData> = {};
 export function getMap(id: string): MapData {
-  if (!CACHE[id]) CACHE[id] = id === 'home' ? buildHome() : id === 'village' ? buildVillage() : buildForest();
+  if (!CACHE[id]) CACHE[id] = id === 'home' ? buildHome() : id === 'village' ? buildVillage() : id === 'cottage' ? buildCottage() : buildForest();
   return CACHE[id];
 }
-export const MAP_IDS = ['home', 'village', 'forest'];
+export const MAP_IDS = ['home', 'village', 'forest', 'cottage'];

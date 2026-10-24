@@ -1,6 +1,6 @@
 # Covenbound — Game Design
 
-A cozy 8-bit witch life sim with real-time action combat. You live as a witch at the edge of a valley. You grow and forage ingredients, brew potions, fly a broom you build yourself, and collect, raise and breed familiars. You also defend villages and forests from corruption, bandits, and the Order that hunts your kind.
+A cozy 16-bit witch life sim with real-time action combat. You live as a witch at the edge of a valley. You grow and forage ingredients, brew potions, fly a broom you build yourself, and collect, raise and breed familiars. You also defend villages and forests from corruption, bandits, and the Order that hunts your kind.
 
 Target: single-player PC game (Steam desktop app and a browser build from the same code). Co-op for 2–4 players can be added later.
 
@@ -61,7 +61,7 @@ Gardening, Foraging and Brewing. Each level raises quality and yield odds.
 ## 4. Familiars
 
 ### Roles
-- **Companion (1):** follows you, attacks with its element, adds its element to your Craft's skills, rides your broom.
+- **Party (up to 3):** travels with you. The **active** one follows you, attacks with its element, sets your element for attack and defense, lends you its ability on O, and gives its passives. Press T to swap (4s cooldown; a Loyal familiar swaps in instantly). The others earn 40% of combat XP.
 - **Home jobs:** Garden (waters plots and raises crop quality), Forage (brings back ingredients each morning), Cauldron (raises brew quality). One familiar per job in the slice; more slots come with roost upgrades.
 - **Resting:** everyone else.
 
@@ -91,13 +91,39 @@ At the roost nest: choose 2 familiars + 1 **Kinship Draught** → an egg that ha
 - Parents rest for 2 days afterwards. Hatchlings start at Lv 1.
 
 ### Evolution
-3 stages per species (names from the prototype). Evolve at Lv 6 and Lv 12 using elemental Essence. Each stage multiplies stats ×1.15 and strengthens the signature talent.
+3 stages per species, each with its own art (16px, 20px, 24px). Evolve at Lv 6 and Lv 12 using elemental Essence. Each stage multiplies stats ×1.15 and strengthens the signature talent. The final form adds an **evolved passive**.
+
+### Abilities and passives (v0.3)
+| Species | Element | Ability (O) | Signature passive | Final-form passive |
+|---|---|---|---|---|
+| Sparkit | Ember | Flame Dash: dash leaving fire | Kindle: chance to burn | Pyre Heart: burning foes take +25% |
+| Wickmoth | Ember | Ember Swarm: 3 seeking embers | Ashfeed: MP on kill | Sunlit Wings: +50% light, −15% damage taken at night |
+| Puddlewog | Tide | Bubble Ward: shield (30% HP), slows when it bursts | Mire Mend: regen | Downpour: +30% healing |
+| Driftjel | Tide | Tidal Lash: pull and slow | Numbing Sting: slow on hit | Pressure: slowed foes take +20% |
+| Pebbleshell | Stone | Shell Bastion: unmovable, projectiles shatter, taunt | Brambleshell: reflect melee | Bedrock: −12% damage, immune to nets and knockback |
+| Dirtnib | Stone | Burrow Strike: erupt under the cursor, stun | Prospector: gold and gear | Seismic Sense: dodge rolls end in a stun tremor |
+| Fluffowl | Gale | Gale Dive: blast and expose to crits | Keen Eye: crit | Stormcall: crits chain lightning |
+| Flitbat | Gale | Night Screech: fear and drain | Leech Wing: life steal | Blood Moon: +20% damage at night, double life steal |
+| Gloamkit | Spirit | Phase Step: blink, leave a decoy | Shadowstep: chance to dodge | Nine Lives: survive a fatal blow once a day |
+| Wisplet | Spirit | Soul Lantern: healing zone that burns foes | Will-o'-Light: light radius, shows glimmer forage | Afterglow: kills drop HP/MP motes |
+
+Driftjel, Gloamkit and Wisplet are **lured**: offer Moonpetal at the pond shrine, or Glowmoss / Starbloom at the glade shrine, at night (after *The Glade Shrine*). Lured familiars get +8% potential.
+
+### Elements
+Five elements on a wheel; each beats two and loses to two: Tide > Ember, Stone · Ember > Gale, Spirit · Stone > Ember, Gale · Gale > Tide, Spirit · Spirit > Stone, Tide. Advantage ×1.5 damage, disadvantage ×0.67, in both directions (enemy attacks use their element against yours).
+
+### Binding
+Weaken a wild familiar until dazed, then press E. The ritual is a tug of wills: hold to raise your binding circle and keep the familiar's spirit inside it until the binding fills. The circle's size comes from the charm (Twine 22%, Silver 30%, Moonsilver 40%). The spirit's temper rises with rarity and remaining HP, falls if your element beats its own, and rises if it beats yours. Failing loses the charm and the familiar recovers.
 
 ## 5. Brewing
 
 Every ingredient carries points in up to 8 **aspects**: Vita, Arcana, Bane, Swift, Ward, Lumen, Verdant, Kin. When you first find an ingredient you only know its strongest aspect. Each brew that uses it reveals another one (Skyrim-style discovery).
 
-**At the cauldron:** add 2–4 ingredients, pick a **method**, then do 3 **stirs**.
+**At the cauldron:** add 2–4 ingredients and pick a **method**. Each method has its own minigame (v0.3), scored 0–3:
+- **Simmer** (small quality bonus): keep the heat inside a drifting band by holding to stoke the fire.
+- **Boil** (purify): skim ten foam bubbles with A/S/D/F or the mouse before they burst.
+- **Steep** (favours the second aspect): stop the shifting brew when its colour matches the target, three times.
+- **Distill** (strips aspects under 25% of the strongest): stir in time, three times.
 - *Simmer:* balanced, with a small quality bonus.
 - *Boil:* primary aspect ×1.3, every other aspect ×0.5. Makes a pure single-aspect potion.
 - *Steep:* secondary aspect ×1.5. Makes it easier to hit two-aspect recipes.
@@ -145,9 +171,9 @@ The companion's Wing stat and the Tailwind/Featherweight talents stack on top. O
 
 ## 8. World and factions (slice region: the Hollow Vale)
 
-- **Thistledown** — your homestead: cottage (sleep/save), garden field, cauldron, familiar roost and nest, broom rack, shipping crate.
-- **Hollowmere** — the witch village: Grandmother Wren (quests, teaches Crafts), Marrow (seeds, charms, supplies), Tamsin (broom parts), Hettie (hats, robes, boots), Corwin (wands, staves, charms), the potion order board.
-- **Brindlewood** — a large forest crossed by the King's Road. It has blight patches, corrupted beasts, a Roadcutter bandit camp, Argent Order patrols, wild familiars, and Old Rootmaw's hollow.
+- **Thistledown** — your homestead: cottage (walk in; bed, chest, decorating), garden field, cauldron, familiar roost and nest, broom rack, shipping crate.
+- **Hollowmere** — the witch village: Grandmother Wren (quests, teaches Crafts), Marrow (seeds, charms, supplies), Tamsin (broom parts), Hettie (hats, robes, boots), Corwin (wands, staves, charms), the potion and bounty board, Bram (furniture), Ysolde and Pip once rescued.
+- **Brindlewood** — a large forest crossed by the King's Road. It has blight patches, corrupted beasts, a Roadcutter bandit camp, Argent Order patrols, wild familiars, and Old Rootmaw's hollow, two shrines and three old waystones.
 
 **Factions**
 - *Corruption:* a rot spreading through the land. Corrupted beasts and bosses.
@@ -156,24 +182,32 @@ The companion's Wing stat and the Tailwind/Featherweight talents stack on top. O
 - Planned reveal for a later region: the Order's purges feed the corruption.
 
 ## 9. Quests in the slice
-1. *Roots and Rows* — plant and harvest 3 Mandrake.
-2. *The First Brew* — brew a Healing Draught. Unlocks the order board.
-3. *Rot in the Brindlewood* — defeat 6 corrupted beasts. Unlocks learning more Crafts.
-4. *A Kindred Spirit* — bind a wild familiar.
-5. *New Blood* — breed two familiars.
-6. *Salt and Silver* — save Ysolde, a hedge witch, from Witchfinder Halloran's patrol.
-7. *The Heart of the Rot* — defeat Old Rootmaw and cleanse Brindlewood.
-- Bounty: Mags Redhand, the Roadcutter chief.
-- Repeatable: potion orders on the Hollowmere board.
+Quests run concurrently and progress from events (kills, harvests, brews, binds, hatchings, exploring). Givers show **!** when they have a quest and **?** when one is ready. Step types: harvest, gather/deliver, brew, kill (filtered by faction, species, element, Alpha, your element, or element advantage), bind, breed (with a potential threshold), boss, explore, escort, defend, comfort, talk.
+
+**Main (Grandmother Wren):** Roots and Rows · Rot in the Brindlewood · The First Brew · A Kindred Spirit · The Wheel of Elements · New Blood · Salt and Silver (find the hideout, defeat Halloran) · The Glade Shrine (defend it through 3 waves) · The Heart of the Rot.
+
+**Side:** Marrow (mushrooms; a stocked pantry), Hettie (hat feathers), Corwin (prove the wheel with an Ember familiar), Tamsin (visit three waystones), Ysolde (escort Pip to the western road), Wren (breed an 80%-potential familiar), Bram (reach 20 Comfort).
+
+**Daily bounties** on the order board (hold up to 3): Alpha hunts, culls, Order patrols, deliveries. Plus the Mags Redhand bounty and potion orders.
+
+## 9b. Combat (v0.3)
+- Enemies telegraph: melee foes flash and show a red wedge of their reach, archers show an aim line, chargers and crows a lane, casters a ground circle. **Space** rolls through attacks with i-frames.
+- Out-of-combat regen is slow; potions share an 8s cooldown (Herbalist tree can shorten it).
+- **Alphas**: rare elite corrupted beasts with 2.6× HP, harder hits, gold names and better drops.
+- **Bosses** have three phases (at 66% and 33%), summon adds, and wear an elemental **shield** (22% of HP) that soaks damage. Hits from an element that beats the boss crack it fast; other hits barely scratch it. A broken shield stuns the boss and exposes it (+25% damage) for 5s. Shields return each phase. Rootmaw (Stone) breaks to Tide/Spirit; Mags (Ember) to Tide/Stone; Halloran (Spirit) to Ember/Gale.
+- **Skill trees**: each Craft has 3 branches × 4 tiers (12 nodes). One point per level from Lv 2; tiers need Lv 2/4/7/10 and the node above. Tier 3 of each branch unlocks an advanced skill; slot one on U. Wren resets a tree for 100g.
+
+## 9c. Home (v0.3)
+Your cottage is a real interior. Press **V** inside to decorate: place, move and store furniture on a grid, hang wall pieces, change wallpaper and flooring. Bram the carpenter (Hollowmere, after *The First Brew*) sells 16 pieces, 5 wallpapers and 5 floors. **Comfort** (duplicates count half) raises the next morning's energy (+1 per point, up to +50); 25+ makes you Rested (+10% Craft XP for the day). The bed and storage chest work as furniture; a Familiar Cushion makes resting familiars earn more XP.
 
 ## 10. Gear
 Slots: hat, robe, boots, wand or staff, charm. Wands lean toward haste, staves toward power. Stats: Power, Ward, Vigor, Mana, Haste, Crit; an element affinity for familiar-element skills; and **life-skill affixes** (Gardener's, Forager's, Brewer's) so outfits matter at home too. The hat changes your sprite's hat.
 
 ## 11. Tech
-- TypeScript + Phaser 3.90 (rendering, input, camera) with DOM overlay UI. All pixel art is generated in code from character grids, so artists can later swap in sprite sheets.
+- TypeScript + Phaser 3.90 (rendering, input, camera) with DOM overlay UI. All pixel art is generated in code: sprites are material grids run through a 16-bit pipeline (hue-shifted 4-tone ramps, neighbour shading lit from the top-left, coloured selective outlines, Scale2x for large sprites). Terrain is baked per map with grass lips, shorelines and blight creep; tree crowns and roofs are separate sprites, depth-sorted with characters and faded when they hide you. Artists can later swap in sprite sheets.
 - `npm run build` → `dist/` for a website or itch.io; `npm run desktop` → Electron app (Steam wrapper; Steamworks via steamworks.js later); `npm run build:single` → one HTML file for sharing.
 - Saves: browser storage, which also works inside the desktop app. Cloud saves come with Steam integration.
 - Co-op later: keep game state separate from rendering so it can be synced.
 
 ## 12. Beyond the slice
-More regions (Saltmarsh, the Argent capital), evil witch covens, weather and seasons, roost upgrades and more job slots, homestead decoration, gamepad support and rebinding, Steam achievements, co-op.
+More regions (Saltmarsh, the Argent capital), evil witch covens, weather and seasons, roost upgrades and more job slots, key rebinding, more furniture sets, Steam achievements, co-op.

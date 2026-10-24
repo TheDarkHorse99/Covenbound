@@ -59,7 +59,7 @@ export function newGame(o: { name: string; race: string; skin: string; hair: str
     quests: [], qdone: [], track: null, bounty: { day: 0, list: [] },
     kills: {}, factionKills: {}, binds: 0, breeds: 0, bosses: {}, harvested: {}, brewed: {},
     ship: [], orders: [], ordersDay: 0, forage: {}, forageDay: 0,
-    home: { wall: 0, floor: 0, items: [{ uid: 1, id: 'bed', x: 2, y: 3 }, { uid: 2, id: 'chest', x: 9, y: 3 }], owned: {}, chest: new Array(30).fill(null), walls: [0], floors: [0] },
+    home: { wall: 0, floor: 0, items: [{ uid: 1, id: 'bed', x: 2, y: 3 }, { uid: 2, id: 'chest', x: 9, y: 2 }], owned: { chair: 1, plant: 1, candles: 1 }, chest: new Array(30).fill(null), walls: [0], floors: [0] },
     cleansed: [], flags: {}, fondness: 1, uid: 1000, playTime: 0,
   };
   setState(s);

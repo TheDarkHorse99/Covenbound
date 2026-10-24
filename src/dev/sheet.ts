@@ -16,6 +16,6 @@ if (what === 'char') {
 }
 if (what === 'map') {
   const id = params.get('m') || 'village'; const map = getMap(id);
-  const t = new Terrain({ w: map.w, h: map.h, m: map.m, v: map.v, id, roofs: findRoofs(map.m, map.w, map.h), home: { wall: 0, floor: 0 } });
+  const t = new Terrain({ w: map.w, h: map.h, m: map.m, v: map.v, id, roofs: findRoofs(map.m, map.w, map.h), home: { wall: 0, floor: 0 }, bakeOver: true });
   const c = document.createElement('canvas'); c.width = map.w * 16; c.height = map.h * 16; const g = c.getContext('2d')!; g.drawImage(t.ground.canvas, 0, 0); g.drawImage(t.over.canvas, 0, 0); show(c, Number(params.get('s') || 2));
 }

@@ -19,7 +19,7 @@ export interface QuestDef {
   id: string; title: string; kind: 'main' | 'side' | 'bounty'; giver: string; text: string; hint: string; steps: Step[]; done: string; reward: Reward;
   req?: { quests?: string[]; flags?: string[] }; onAccept?: string[];
 }
-export const NPC_NAMES: Record<string, string> = { wren: 'Grandmother Wren', marrow: 'Marrow', hettie: 'Hettie', corwin: 'Corwin', tamsin: 'Tamsin', ysolde: 'Ysolde', bram: 'Bram', board: 'Order board' };
+export const NPC_NAMES: Record<string, string> = { pip: 'Pip', wren: 'Grandmother Wren', marrow: 'Marrow', hettie: 'Hettie', corwin: 'Corwin', tamsin: 'Tamsin', ysolde: 'Ysolde', bram: 'Bram', board: 'Order board' };
 
 export const QUESTS: QuestDef[] = [
   // ---------------- main ----------------
@@ -96,7 +96,7 @@ export const QUESTS: QuestDef[] = [
     done: 'Then they still stand. Take these bristles; you have earned real speed.', reward: { gold: 60, part: 'heather' } },
   { id: 's_ysolde', kind: 'side', giver: 'ysolde', title: 'Pip\'s Way Home', req: { quests: ['q7'] },
     text: 'My apprentice Pip is still hiding at the old hideout. Bring him safely out of the Brindlewood, to the western road.', hint: 'Pip follows you. Keep enemies off him; he has little health. Lead him to the west edge of Brindlewood.',
-    steps: [{ t: 'escort', d: 'Escort Pip to the western road' }], done: 'Pip! Oh, thank you. Take these, I braided them under the Order\'s noses.', reward: { gold: 90, items: [['charm3', 0, 2]] } },
+    steps: [{ t: 'escort', d: 'Escort Pip to the western road' }], done: 'Pip! Oh, thank you. Take these, I braided them under the Order\'s noses.', reward: { gold: 90, items: [['charm3', 0, 2]], flags: ['pipSafe'] } },
   { id: 's_wren', kind: 'side', giver: 'wren', title: 'Strong Blood', req: { quests: ['q6'] },
     text: 'Breed me a familiar with real potential: at least 80% in any one stat.', hint: 'Breed parents with high potentials; better Kinship Draughts add bonus potential.',
     steps: [{ t: 'breed', n: 1, min: 80, d: 'Hatch a familiar with 80%+ potential in a stat' }], done: 'Now that is a bloodline.', reward: { gold: 200, items: [['p_kinship', 3, 2]] } },

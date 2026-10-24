@@ -13,6 +13,7 @@ export const AFFIX_INFO: Record<Affix, { pre?: string; suf?: string; d: (v: numb
   tide: { suf: 'of Tides', d: v => `+${v}% damage with a Tide companion` },
   stone: { suf: 'of Stone', d: v => `+${v}% damage with a Stone companion` },
   gale: { suf: 'of Gales', d: v => `+${v}% damage with a Gale companion` },
+  spirit: { suf: 'of Souls', d: v => `+${v}% damage with a Spirit companion` },
   garden: { pre: "Gardener's", d: v => `+${v}% chance of higher crop quality` },
   forage: { pre: "Forager's", d: v => `+${v}% chance to forage double` },
   brew: { pre: "Brewer's", d: v => `+${(v / 10).toFixed(1)} brew quality points` },

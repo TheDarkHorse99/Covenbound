@@ -42,7 +42,7 @@ function h2(x: number, y: number, s = 0) { let n = (x * 374761393 + y * 66826526
 
 // ---------- prebuilt object sprites ----------
 const crownCache = new Map<string, HTMLCanvasElement>();
-function crown(variant: number, dead = false): HTMLCanvasElement {
+export function crown(variant: number, dead = false): HTMLCanvasElement {
   const key = `${variant}:${dead}`; const hit = crownCache.get(key); if (hit) return hit;
   const W = 32, H = 30; const c = mk(W, H), g = c.getContext('2d')!; const r = rngFrom(variant * 97 + 11);
   if (dead) {
@@ -86,7 +86,8 @@ const tent = () => obj('tent', 18, 16, (p) => { const rp = ramp('#9a8a5a'); for 
 const shrine = () => obj('shrine', 16, 16, (p) => { const rp = ramp('#8a8aa0'); p('#2a2838', 2, 6, 12, 10); p(rp[1], 3, 7, 10, 8); p(rp[3], 3, 7, 10, 1); p(rp[2], 3, 8, 10, 3); p(rp[0], 3, 14, 10, 1); p('#2a2838', 4, 2, 8, 5); p(rp[2], 5, 3, 6, 3); p(rp[3], 5, 3, 6, 1); p('#f2e8c8', 6, 0, 1, 3); p('#f2e8c8', 9, 0, 1, 3); p('#ffd166', 6, -1 + 1, 1, 1); p('#ffd166', 9, 0, 1, 1); p('#b06aff', 7, 10, 2, 2); });
 
 // ---------- painting ----------
-export interface TerrainCtx { w: number; h: number; m: Uint8Array; v: Uint8Array; id: string; roofs: { x0: number; y0: number; x1: number; y1: number; t: number }[]; home: { wall: number; floor: number } }
+export interface Roof { x0: number; y0: number; x1: number; y1: number; t: number }
+export interface TerrainCtx { w: number; h: number; m: Uint8Array; v: Uint8Array; id: string; roofs: Roof[]; home: { wall: number; floor: number }; bakeOver?: boolean }
 type Cls = 'grass' | 'path' | 'cobble' | 'soil' | 'tilled' | 'wet' | 'water' | 'shallow' | 'blight' | 'floor' | 'wallin' | 'floorin' | 'void';
 function cls(t: number): Cls {
   switch (t) {
@@ -121,15 +122,15 @@ export class Terrain {
   constructor(ctx: TerrainCtx) {
     this.ctx = ctx; this.ground = new PixelBuf(ctx.w * T, ctx.h * T); this.over = new PixelBuf(ctx.w * T, ctx.h * T);
     for (let ty = 0; ty < ctx.h; ty++) for (let tx = 0; tx < ctx.w; tx++) this.paintGround(tx, ty);
-    this.paintOverRegion(0, 0, ctx.w, ctx.h);
-    this.ground.flush(); this.over.flush();
+    if (ctx.bakeOver) this.paintOverRegion(0, 0, ctx.w, ctx.h);
+    this.ground.flush(); if (ctx.bakeOver) this.over.flush();
   }
   private t(x: number, y: number): number { const c = this.ctx; if (x < 0 || y < 0 || x >= c.w || y >= c.h) { x = Math.max(0, Math.min(c.w - 1, x)); y = Math.max(0, Math.min(c.h - 1, y)); } return c.m[y * c.w + x]; }
   /** Repaint after a tile changed: ground in a 3×3 block, overhead in the area crowns can reach. */
   repaint(tx: number, ty: number) {
     for (let y = ty - 1; y <= ty + 1; y++) for (let x = tx - 1; x <= tx + 1; x++) if (x >= 0 && y >= 0 && x < this.ctx.w && y < this.ctx.h) this.paintGround(x, y);
     this.ground.flush((tx - 1) * T, (ty - 1) * T, 3 * T, 3 * T);
-    this.paintOverRegion(tx - 2, ty - 2, tx + 3, ty + 2); this.over.flush((tx - 2) * T, (ty - 2) * T, 5 * T, 4 * T);
+    if (this.ctx.bakeOver) { this.paintOverRegion(tx - 2, ty - 2, tx + 3, ty + 2); this.over.flush((tx - 2) * T, (ty - 2) * T, 5 * T, 4 * T); }
   }
   private paintGround(tx: number, ty: number) {
     const pb = this.ground, ox = tx * T, oy = ty * T, t = this.t(tx, ty), c = cls(t); const v = this.ctx.v[ty * this.ctx.w + tx];
@@ -257,31 +258,44 @@ export class Terrain {
   paintOverRegion(x0: number, y0: number, x1: number, y1: number) {
     const pb = this.over; const cx0 = x0 * T, cy0 = y0 * T, cx1 = x1 * T, cy1 = y1 * T;
     pb.clearRect(cx0, cy0, cx1 - cx0, cy1 - cy0); pb.clip = [cx0, cy0, cx1, cy1];
-    for (const r of this.ctx.roofs) if ((r.x1 + 1) * T + 4 > cx0 && r.x0 * T - 4 < cx1 && (r.y1 + 1) * T + 6 > cy0 && r.y0 * T - 8 < cy1) this.paintRoof(r);
+    for (const r of this.ctx.roofs) if ((r.x1 + 1) * T + 4 > cx0 && r.x0 * T - 4 < cx1 && (r.y1 + 1) * T + 6 > cy0 && r.y0 * T - 8 < cy1) paintRoof(pb, r, 0, 0);
     for (let ty = Math.max(0, y0 - 1); ty < Math.min(this.ctx.h, y1 + 2); ty++) for (let tx = Math.max(0, x0 - 2); tx < Math.min(this.ctx.w, x1 + 2); tx++) {
       const t = this.t(tx, ty);
       if (t === TL.TREE) { const v = this.ctx.v[ty * this.ctx.w + tx]; stampCanvas(pb, crown(v), tx * T + 8 - 16, ty * T + 10 - 30); }
       else if (t === TL.DEADTREE) stampCanvas(pb, crown(0, true), tx * T + 8 - 16, ty * T + 10 - 30);
-      else if (t === TL.STALL && this.t(tx, ty - 1) !== TL.STALL) { for (let x = -1; x < 17; x++) for (let y = 0; y < 6; y++) pb.set(tx * T + x, ty * T - 4 + y, C(y === 5 ? '#3a2416' : (Math.floor((x + 1) / 3) % 2 ? '#e8e0c8' : (tx % 2 ? '#3a8a5a' : '#a63a3a')))); }
+      else if (t === TL.STALL && this.t(tx, ty - 1) !== TL.STALL) stampCanvas(pb, awning(tx), tx * T - 1, ty * T - 4);
     }
     pb.clip = null;
   }
-  private paintRoof(r: { x0: number; y0: number; x1: number; y1: number; t: number }) {
-    const pb = this.over; const col = r.t === TL.ROOF_BLUE ? '#3a5a95' : r.t === TL.ROOF_GREEN ? '#3f7a4a' : r.t === TL.ROOF_PURPLE ? '#6a3a95' : '#9a3a46'; const rp = ramp(col);
-    const X0 = r.x0 * T - 3, X1 = (r.x1 + 1) * T + 3, Y0 = r.y0 * T - 7, Y1 = (r.y1 + 1) * T + 3; const H = Y1 - Y0;
-    // chimney
-    const chx = X0 + Math.floor((X1 - X0) * 0.72); for (let y = Y0 - 6; y < Y0 + 6; y++) for (let x = chx; x < chx + 6; x++) pb.set(x, y, C(x === chx || y === Y0 - 6 ? '#2a1a14' : (y + (x % 2)) % 3 === 0 ? '#6a3a2a' : '#8a4a36'));
-    for (let y = Y0; y < Y1; y++) {
-      const k = (y - Y0) / H; const row = Math.floor((y - Y0) / 4); const inRow = (y - Y0) % 4;
-      for (let x = X0; x < X1; x++) {
-        const edge = x === X0 || x === X1 - 1; if (edge) { pb.set(x, y, C(rp[0])); continue; }
-        let tone = k < 0.12 ? 3 : k < 0.55 ? 2 : k < 0.85 ? 1 : 1;
-        const sx = (x - X0 + (row % 2) * 2) % 4; if (inRow === 3) tone = Math.max(0, tone - 2); else if (sx === 3 && inRow > 0) tone = Math.max(0, tone - 1); else if (inRow === 0 && sx < 2 && tone < 3) tone++;
-        pb.set(x, y, C(rp[tone]));
-      }
+}
+function paintRoof(pb: PixelBuf, r: Roof, ox: number, oy: number) { const col = r.t === TL.ROOF_BLUE ? '#3a5a95' : r.t === TL.ROOF_GREEN ? '#3f7a4a' : r.t === TL.ROOF_PURPLE ? '#6a3a95' : '#9a3a46'; const rp = ramp(col);
+  const X0 = r.x0 * T - 3 - ox, X1 = (r.x1 + 1) * T + 3 - ox, Y0 = r.y0 * T - 7 - oy, Y1 = (r.y1 + 1) * T + 3 - oy; const H = Y1 - Y0;
+  // chimney
+  const chx = X0 + Math.floor((X1 - X0) * 0.72); for (let y = Y0 - 6; y < Y0 + 6; y++) for (let x = chx; x < chx + 6; x++) pb.set(x, y, C(x === chx || y === Y0 - 6 ? '#2a1a14' : (y + (x % 2)) % 3 === 0 ? '#6a3a2a' : '#8a4a36'));
+  for (let y = Y0; y < Y1; y++) {
+    const k = (y - Y0) / H; const row = Math.floor((y - Y0) / 4); const inRow = (y - Y0) % 4;
+    for (let x = X0; x < X1; x++) {
+      const edge = x === X0 || x === X1 - 1; if (edge) { pb.set(x, y, C(rp[0])); continue; }
+      let tone = k < 0.12 ? 3 : k < 0.55 ? 2 : k < 0.85 ? 1 : 1;
+      const sx = (x - X0 + (row % 2) * 2) % 4; if (inRow === 3) tone = Math.max(0, tone - 2); else if (sx === 3 && inRow > 0) tone = Math.max(0, tone - 1); else if (inRow === 0 && sx < 2 && tone < 3) tone++;
+      pb.set(x, y, C(rp[tone]));
     }
-    for (let x = X0; x < X1; x++) { pb.set(x, Y0, C(rp[0])); pb.set(x, Y0 + 1, C(rp[3])); pb.set(x, Y1 - 1, C('#1a1210')); pb.set(x, Y1 - 2, C(rp[0])); }
   }
+  for (let x = X0; x < X1; x++) { pb.set(x, Y0, C(rp[0])); pb.set(x, Y0 + 1, C(rp[3])); pb.set(x, Y1 - 1, C('#1a1210')); pb.set(x, Y1 - 2, C(rp[0])); }
+}
+
+/** A building's roof as its own sprite, so it can be depth-sorted with the characters around it. */
+const roofCache = new Map<string, { c: HTMLCanvasElement; x: number; y: number }>();
+export function roofSprite(r: Roof): { c: HTMLCanvasElement; x: number; y: number } {
+  const key = `${r.x0},${r.y0},${r.x1},${r.y1},${r.t}`; const hit = roofCache.get(key); if (hit) return hit;
+  const x = r.x0 * T - 3, y = r.y0 * T - 13; const pb = new PixelBuf((r.x1 - r.x0 + 1) * T + 6, (r.y1 - r.y0 + 1) * T + 16);
+  paintRoof(pb, r, x, y); pb.flush(); const out = { c: pb.canvas, x, y }; roofCache.set(key, out); return out;
+}
+const awnCache = new Map<number, HTMLCanvasElement>();
+export function awning(tx: number): HTMLCanvasElement {
+  const k = tx % 2; const hit = awnCache.get(k); if (hit) return hit; const pb = new PixelBuf(18, 6);
+  for (let x = 0; x < 18; x++) for (let y = 0; y < 6; y++) pb.set(x, y, C(y === 5 ? '#3a2416' : (Math.floor(x / 3) % 2 ? '#e8e0c8' : (k ? '#3a8a5a' : '#a63a3a'))));
+  pb.flush(); awnCache.set(k, pb.canvas); return pb.canvas;
 }
 /** Finds roof rectangles (one per building) so roofs can be drawn as single pieces. */
 export function findRoofs(m: Uint8Array, w: number, h: number) {
