@@ -11,7 +11,10 @@ for (const p of POTIONS) ITEMS['p_' + p.id] = { id: 'p_' + p.id, name: p.name, k
 ITEMS.hoe = { id: 'hoe', name: 'Hoe', kind: 'tool', price: 0, desc: 'Till soil in your garden field.', sellable: false, stack: false };
 ITEMS.can = { id: 'can', name: 'Watering Can', kind: 'tool', price: 0, desc: 'Water tilled soil and crops.', sellable: false, stack: false };
 ITEMS.wand = { id: 'wand', name: 'Your Craft', kind: 'tool', price: 0, desc: "Click to use your Craft's basic attack.", sellable: false, stack: false };
-ITEMS.charm = { id: 'charm', name: 'Binding Charm', kind: 'misc', price: 25, desc: 'Press E beside a dazed wild familiar to bind it.', sellable: true, stack: true };
+export const CHARMS = ['charm3', 'charm2', 'charm'];
+ITEMS.charm = { id: 'charm', name: 'Twine Charm', kind: 'misc', price: 25, desc: 'A simple binding charm. Small binding circle.', sellable: true, stack: true };
+ITEMS.charm2 = { id: 'charm2', name: 'Silver Charm', kind: 'misc', price: 70, desc: 'A sturdier binding charm. Wider circle, faster binding.', sellable: true, stack: true };
+ITEMS.charm3 = { id: 'charm3', name: 'Moonsilver Charm', kind: 'misc', price: 160, desc: 'The finest binding charm. Huge circle; familiars barely resist.', sellable: true, stack: true };
 for (const e of ELEMENTS) ITEMS['ess_' + e] = { id: 'ess_' + e, name: `${ELEMENT_INFO[e].name} Essence`, kind: 'essence', price: 20, desc: `Evolves ${ELEMENT_INFO[e].name} familiars.`, sellable: true, stack: true };
 
 export function itemName(id: string, q = 0): string {

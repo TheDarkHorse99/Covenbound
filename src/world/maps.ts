@@ -28,6 +28,9 @@ function base(w: number, h: number, seed: number) {
   };
   return { m, v, r, set, rect, border };
 }
+function ellipse(set: (x: number, y: number, t: number) => void, cx: number, cy: number, rx: number, ry: number, t: number) {
+  for (let y = Math.floor(cy - ry); y <= Math.ceil(cy + ry); y++) for (let x = Math.floor(cx - rx); x <= Math.ceil(cx + rx); x++) if (((x - cx) ** 2) / (rx * rx) + ((y - cy) ** 2) / (ry * ry) <= 1) set(x, y, t);
+}
 function openTiles(m: Uint8Array, w: number, h: number): number[] {
   const out: number[] = []; for (let i = 0; i < w * h; i++) { const x = i % w, y = (i / w) | 0; if (x > 1 && y > 1 && x < w - 2 && y < h - 2 && isGrassy(m[i])) out.push(i); } return out;
 }
@@ -42,7 +45,7 @@ function buildHome(): MapData {
   rect(12, 4, 27, 4, TL.FENCE); rect(12, 11, 27, 11, TL.FENCE); rect(12, 4, 12, 11, TL.FENCE); rect(27, 4, 27, 11, TL.FENCE);
   rect(13, 5, 26, 10, TL.SOIL); set(19, 11, TL.PATH); set(20, 11, TL.PATH); rect(19, 12, 20, 12, TL.PATH);
   // pond
-  rect(26, 17, 31, 21, TL.DEEP); rect(25, 18, 25, 20, TL.SHALLOW); rect(27, 16, 30, 16, TL.SHALLOW); set(28, 19, TL.LILY); set(30, 18, TL.LILY);
+  ellipse(set, 28.5, 19, 3.6, 2.8, TL.SHALLOW); ellipse(set, 28.5, 19, 2.8, 2.0, TL.DEEP); set(28, 19, TL.LILY); set(30, 18, TL.LILY);
   // decor
   for (const [x, y] of [[3, 19], [15, 20], [20, 22], [32, 6], [33, 9]]) set(x, y, TL.BUSH);
   for (const [x, y] of [[13, 16], [22, 21], [4, 12]]) set(x, y, TL.ROCK);
@@ -68,7 +71,7 @@ function buildVillage(): MapData {
   for (const [x, roof] of houses) { rect(x, 4, x + 5, 6, roof); rect(x, 7, x + 5, 8, TL.HWALL); set(x + 1, 7, TL.WINDOW); set(x + 4, 7, TL.WINDOW); set(x + 2, 8, TL.DOOR); rect(x + 2, 9, x + 2, 11, TL.COBBLE); }
   rect(16, 14, 23, 19, TL.COBBLE);
   rect(26, 16, 29, 16, TL.STALL); rect(10, 16, 11, 16, TL.STALL);
-  rect(3, 18, 8, 22, TL.DEEP); rect(4, 17, 7, 17, TL.SHALLOW); set(5, 20, TL.LILY);
+  ellipse(set, 5.5, 20, 3.4, 2.7, TL.SHALLOW); ellipse(set, 5.5, 20, 2.6, 1.9, TL.DEEP); set(5, 20, TL.LILY);
   rect(30, 19, 36, 19, TL.FENCE); rect(30, 19, 30, 22, TL.FENCE); rect(31, 20, 35, 22, TL.FLOWERS);
   for (const [x, y] of [[13, 20], [24, 22], [36, 15], [2, 15]]) set(x, y, TL.BUSH);
   const npcY = 10 * T + 4;

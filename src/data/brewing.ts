@@ -38,6 +38,7 @@ export const INGREDIENTS: IngredientDef[] = [
   { id: 'thornquill', name: 'Thorn Quill', icon: 'quill', a: '#b8c86a', b: '#6a4a2a', asp: { swift: 3, bane: 2 }, price: 10, source: 'drop', desc: 'Shed by Thornrats.' },
   { id: 'heartsap', name: 'Heartwood Sap', icon: 'sap', a: '#e0a040', b: '#7a4a1a', asp: { verdant: 4, ward: 2 }, price: 16, source: 'drop', desc: 'Amber sap from a Snagstump.' },
   { id: 'rotfeather', name: 'Rot Feather', icon: 'quill', a: '#3a3a4a', b: '#8a6ad6', asp: { swift: 2, bane: 2, lumen: 1 }, price: 12, source: 'drop', desc: 'A Rotcrow feather, black at the root.' },
+  { id: 'emberchitin', name: 'Ember Chitin', icon: 'salt', a: '#c0502a', b: '#ffd166', asp: { ward: 2, lumen: 2, swift: 1 }, price: 14, source: 'drop', desc: 'A warm shell plate from a Cinder Beetle.' },
   { id: 'argentsalt', name: 'Argent Salt', icon: 'salt', a: '#f4f4ff', b: '#c8d0e8', asp: { ward: 3, lumen: 3 }, price: 30, source: 'drop', desc: 'The Order blesses it and calls it holy. It is also very good at cleansing rot.' },
   { id: 'saffron', name: 'Smuggled Saffron', icon: 'spice', a: '#f2a83a', b: '#c0402a', asp: { vita: 2, arcana: 2, lumen: 1 }, price: 40, source: 'drop', desc: 'Stolen goods from a Roadcutter pack.' },
   { id: 'familiardown', name: 'Familiar Down', icon: 'down', a: '#ffffff', b: '#f08ac0', asp: { kin: 4 }, price: 25, source: 'drop', desc: 'Soft fluff left behind by a familiar.' },
@@ -83,11 +84,12 @@ export const POTIONS: PotionDef[] = [
 export const POTION: Record<string, PotionDef> = Object.fromEntries(POTIONS.map(p => [p.id, p]));
 export const potionTierVal = T4;
 
-export type Method = 'simmer' | 'boil' | 'steep';
-export const METHODS: Record<Method, { name: string; desc: string }> = {
-  simmer: { name: 'Simmer', desc: 'Balanced. Small quality bonus.' },
-  boil: { name: 'Boil', desc: 'Strongest aspect ×1.3, all others ×0.5. For pure brews.' },
-  steep: { name: 'Steep', desc: 'Second-strongest aspect ×1.5. For two-aspect brews.' },
+export type Method = 'simmer' | 'boil' | 'steep' | 'distill';
+export const METHODS: Record<Method, { name: string; desc: string; game: string }> = {
+  simmer: { name: 'Simmer', desc: 'Balanced. Small quality bonus.', game: 'Keep the heat in the band: hold Space to stoke the fire.' },
+  boil: { name: 'Boil', desc: 'Strongest aspect ×1.3, all others ×0.5. For pure brews.', game: 'Skim the foam: press the key shown on each bubble (or click it) before it bursts.' },
+  steep: { name: 'Steep', desc: 'Second-strongest aspect ×1.5. For two-aspect brews.', game: 'Pull the brew: press Space when its colour matches the target.' },
+  distill: { name: 'Distill', desc: 'Removes every aspect weaker than a quarter of the strongest.', game: 'Stir in time: press Space when the spoon is in the gold band.' },
 };
 
 export interface BrewInput { id: string; q: number }
@@ -102,6 +104,7 @@ export function resolveBrew(inputs: BrewInput[], method: Method, stirScore: numb
   let order = rank();
   if (method === 'boil') { const p = order[0]; for (const a of ASPECTS) tot[a] = a === p ? tot[a] * 1.3 : tot[a] * 0.5; }
   if (method === 'steep') { tot[order[1]] *= 1.5; }
+  if (method === 'distill') { const top = tot[order[0]]; for (const a of ASPECTS) if (tot[a] < top * 0.25) tot[a] = 0; }
   order = rank();
   const p = order[0], s = order[1];
   const total = ASPECTS.reduce((acc, a) => acc + tot[a], 0);
