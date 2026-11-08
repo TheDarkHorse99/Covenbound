@@ -1,5 +1,7 @@
 # Covenbound
 
+**[▶ Play in your browser](https://thedarkhorse99.github.io/Covenbound/)** — no download, saves in your browser. Keyboard and mouse; the latest version deploys automatically from `main`.
+
 A cozy 16-bit witch life sim with real-time action combat. Grow and forage ingredients, brew potions, build your broom, collect and breed familiars, and defend the valley from corruption, bandits and the Argent Order.
 
 The full design is in [DESIGN.md](DESIGN.md).
