@@ -209,7 +209,8 @@ function optionsHTML(): string {
   return `<div class="list"><div class="row-item"><div class="ri-main"><div class="ri-name">Sound</div></div><div class="ri-act"><button class="btn" data-act="mute">${audio.muted ? 'Off' : 'On'}</button></div></div>
     <div class="row-item"><div class="ri-main"><div class="ri-name">Save</div><div class="ri-sub">The game saves when you sleep, change areas, and every 20 seconds.</div></div><div class="ri-act"><button class="btn" data-act="save">Save now</button></div></div>
     <div class="row-item"><div class="ri-main"><div class="ri-name">Title screen</div></div><div class="ri-act"><button class="btn" data-act="title">Save &amp; quit to title</button></div></div>
-    <div class="row-item"><div class="ri-main"><div class="ri-name">Delete save</div><div class="ri-sub">Erases this witch, every familiar and all progress.</div></div><div class="ri-act">${confirmDelete ? '<button class="btn danger" data-act="delete2">Delete forever</button><button class="btn" data-act="nodelete">Keep</button>' : '<button class="btn" data-act="delete">Delete…</button>'}</div></div></div>
+    <div class="row-item"><div class="ri-main"><div class="ri-name">Delete save</div><div class="ri-sub">Erases this witch, every familiar and all progress.</div></div><div class="ri-act">${confirmDelete ? '<button class="btn danger" data-act="delete2">Delete forever</button><button class="btn" data-act="nodelete">Keep</button>' : '<button class="btn" data-act="delete">Delete…</button>'}</div></div>
+    <div class="row-item"><div class="ri-main"><div class="ri-name">Report a bug</div><div class="ri-sub">Opens the issue tracker. Copy debug info first and paste it into the report: it includes your save (no personal data).</div></div><div class="ri-act"><button class="btn" data-act="debug">Copy debug info</button><a class="btn" href="https://github.com/TheDarkHorse99/Covenbound/issues/new" target="_blank" rel="noopener">Report</a></div></div></div>
     <p class="muted">Play time ${Math.floor(S.playTime / 60)} min · Day ${S.day}</p>`;
 }
 
@@ -449,6 +450,7 @@ export function initMenus() {
     // sleep / options
     if (d.act === 'sleep') { $('modal').hidden = true; game.modal = false; view = null; sleep(false); return; }
     if (d.act === 'mute') { audio.muted = !audio.muted; rerender(); return; }
+    if (d.act === 'debug') { const info = { version: 'v0.3', ua: navigator.userAgent, map: W.map?.id, pos: [Math.round(W.P.x), Math.round(W.P.y)], save: S }; navigator.clipboard?.writeText('```json\n' + JSON.stringify(info) + '\n```').then(() => hooks.toast('Debug info copied. Paste it into your bug report.', 'good'), () => hooks.toast('Could not copy. Your browser blocked clipboard access.', 'bad')); return; }
     if (d.act === 'save') { saveNow(); hooks.toast('Saved.', 'good'); return; }
     if (d.act === 'title') { saveNow(); $('modal').hidden = true; game.modal = false; view = null; showTitle(); return; }
     if (d.act === 'delete') { confirmDelete = true; rerender(); return; }

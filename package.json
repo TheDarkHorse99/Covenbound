@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:single": "vite build --mode single",
+    "build:itch": "vite build --base=./ --outDir dist-itch && cd dist-itch && rm -f ../covenbound-itch.zip && zip -qr ../covenbound-itch.zip .",
     "typecheck": "tsc --noEmit",
     "preview": "vite preview",
     "desktop": "vite build && electron ."

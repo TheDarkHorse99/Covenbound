@@ -19,7 +19,7 @@ export function showTitle() {
   openModal(`<div class="title-wrap"><h1 class="title-art">COVENBOUND</h1>
     <p class="tagline">Grow, forage and brew. Raise and breed familiars. Defend the valley from the rot, the roads from bandits, and your kind from the Argent Order.</p>
     <div class="btnrow center">${sv ? `<button class="btn go" id="tContinue">Continue · ${esc(sv.name)}, Day ${sv.day}</button>` : ''}<button class="btn ${sv ? '' : 'go'}" id="tNew">New witch</button></div>
-    ${!sv && hasOldSave() ? '<p class="warn small center">Your v0.2 witch cannot make the trip to v0.3: the world was rebuilt. A fresh start awaits.</p>' : ''}<p class="muted small center">Vertical slice · v0.3 · saves in this browser</p></div>`, { kind: 'title' });
+    ${!sv && hasOldSave() ? '<p class="warn small center">Your v0.2 witch cannot make the trip to v0.3: the world was rebuilt. A fresh start awaits.</p>' : ''}<p class="muted small center">Vertical slice · v0.3 · saves in this browser · <a class="lnk" href="https://github.com/TheDarkHorse99/Covenbound/issues/new" target="_blank" rel="noopener">Found a bug? Report it</a></p></div>`, { kind: 'title' });
   if (sv) $('tContinue').onclick = () => startGame(sv, false);
   $('tNew').onclick = () => showCreate();
 }
